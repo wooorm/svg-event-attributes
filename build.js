@@ -22,8 +22,8 @@ https.get('https://www.w3.org/TR/SVG11/attindex.html', onsvg1)
 https.get('https://www.w3.org/TR/SVGTiny12/attributeTable.html', ontiny)
 https.get('https://www.w3.org/TR/SVG2/attindex.html', onsvg2)
 
-function onsvg1(res) {
-  res.pipe(concat(onconcat)).on('error', bail)
+function onsvg1(response) {
+  response.pipe(concat(onconcat)).on('error', bail)
 
   function onconcat(buf) {
     var tree = proc.parse(buf)
@@ -55,8 +55,8 @@ function onsvg1(res) {
   }
 }
 
-function ontiny(res) {
-  res.pipe(concat(onconcat)).on('error', bail)
+function ontiny(response) {
+  response.pipe(concat(onconcat)).on('error', bail)
 
   function onconcat(buf) {
     var tree = proc.parse(buf)
@@ -80,8 +80,8 @@ function ontiny(res) {
   }
 }
 
-function onsvg2(res) {
-  res.pipe(concat(onconcat)).on('error', bail)
+function onsvg2(response) {
+  response.pipe(concat(onconcat)).on('error', bail)
 
   function onconcat(buf) {
     var tree = proc.parse(buf)
