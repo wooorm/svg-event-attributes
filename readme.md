@@ -20,7 +20,7 @@ npm install svg-event-attributes
 ## Use
 
 ```js
-var svgEventAttributes = require('svg-event-attributes')
+import {svgEventAttributes} from 'svg-event-attributes'
 
 console.log(svgEventAttributes.slice(0, 10))
 ```
