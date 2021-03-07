@@ -107,7 +107,7 @@ function done(list) {
   if (actual === expected) {
     fs.writeFile(
       'index.js',
-      'export var svgEventAttributes = ' +
+      '/** @type string[] */\nexport var svgEventAttributes = ' +
         JSON.stringify(
           all.filter((d, i, data) => data.indexOf(d) === i).sort(alphaSort()),
           null,
