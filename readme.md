@@ -44,7 +44,7 @@ Yields:
 
 ## API
 
-`svgEventAttributes` exports the following identifiers: `svgEventAttributes`.
+`svg-event-attributes` exports the following identifiers: `svgEventAttributes`.
 There is no default export.
 
 ### `svgEventAttributes`
