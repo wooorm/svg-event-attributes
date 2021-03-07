@@ -33,6 +33,7 @@
   "devDependencies": {
     "alpha-sort": "^4.0.0",
     "bail": "^1.0.0",
+    "c8": "^7.0.0",
     "concat-stream": "^2.0.0",
     "hast-util-is-event-handler": "^1.0.0",
     "hast-util-select": "^4.0.0",
@@ -54,7 +55,8 @@
     "build": "tsc",
     "prepublishOnly": "npm run build",
     "test-api": "node test",
-    "test": "npm run format && npm run build && npm run test-api"
+    "test-coverage": "c8 --check-coverage --branches 100 --functions 100 --lines 100 --statements 100 --reporter lcov node test.js",
+    "test": "npm run format && npm run build && npm run test-coverage"
   },
   "prettier": {
     "tabWidth": 2,
