@@ -44,6 +44,9 @@ Yields:
 
 ## API
 
+`svgEventAttributes` exports the following identifiers: `svgEventAttributes`.
+There is no default export.
+
 ### `svgEventAttributes`
 
 `Array.<string>` — List of SVG event handler content attributes.
