@@ -1,6 +1,4 @@
 .DS_Store
 *.log
 node_modules/
-svg-event-attributes.js
-svg-event-attributes.min.js
 yarn.lock

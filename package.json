@@ -30,7 +30,6 @@
   "devDependencies": {
     "alpha-sort": "^4.0.0",
     "bail": "^1.0.0",
-    "browserify": "^17.0.0",
     "concat-stream": "^2.0.0",
     "hast-util-is-event-handler": "^1.0.0",
     "hast-util-select": "^4.0.0",
@@ -40,18 +39,14 @@
     "remark-cli": "^9.0.0",
     "remark-preset-wooorm": "^8.0.0",
     "tape": "^5.0.0",
-    "tinyify": "^3.0.0",
     "unified": "^9.0.0",
     "xo": "^0.38.0"
   },
   "scripts": {
     "generate": "node build",
     "format": "remark . -qfo && prettier . -w --loglevel warn && xo --fix",
-    "build-bundle": "browserify index.json -s svgEventAttributes -o svg-event-attributes.js",
-    "build-mangle": "browserify index.json -s svgEventAttributes -p tinyify -o svg-event-attributes.min.js",
-    "build": "npm run build-bundle && npm run build-mangle",
     "test-api": "node test",
-    "test": "npm run format && npm run build && npm run test-api"
+    "test": "npm run format && npm run test-api"
   },
   "prettier": {
     "tabWidth": 2,
@@ -64,9 +59,6 @@
   "xo": {
     "esnext": false,
     "prettier": true,
-    "ignores": [
-      "svg-event-attributes.js"
-    ],
     "rules": {
       "unicorn/no-array-callback-reference": "off",
       "unicorn/no-array-for-each": "off"
