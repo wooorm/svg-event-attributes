@@ -1,4 +1,3 @@
-/** @type string[] */
 export var svgEventAttributes = [
   'onabort',
   'onactivate',
