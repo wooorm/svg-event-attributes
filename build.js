@@ -113,7 +113,7 @@ function done(list) {
   if (actual === expected) {
     fs.writeFile(
       'index.json',
-      JSON.stringify(all.filter(unique).sort(alphaSort.ascending), 0, 2) + '\n',
+      JSON.stringify(all.filter(unique).sort(alphaSort()), 0, 2) + '\n',
       bail
     )
   }
