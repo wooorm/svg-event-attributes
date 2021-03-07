@@ -1,15 +1,13 @@
-'use strict'
-
-var fs = require('fs')
-var https = require('https')
-var bail = require('bail')
-var concat = require('concat-stream')
-var alphaSort = require('alpha-sort')
-var unified = require('unified')
-var parse = require('rehype-parse')
-var q = require('hast-util-select')
-var toString = require('hast-util-to-string')
-var ev = require('hast-util-is-event-handler')
+import fs from 'fs'
+import https from 'https'
+import bail from 'bail'
+import concat from 'concat-stream'
+import alphaSort from 'alpha-sort'
+import unified from 'unified'
+import parse from 'rehype-parse'
+import q from 'hast-util-select'
+import toString from 'hast-util-to-string'
+import ev from 'hast-util-is-event-handler'
 
 var proc = unified().use(parse)
 
@@ -29,25 +27,25 @@ function onsvg1(response) {
     var tree = proc.parse(buf)
     var list = []
     var nodes = q.selectAll('.property-table tr', tree)
+    var index = -1
+    var offset
+    var names
+    var value
 
     if (nodes.length === 0) {
       throw new Error('Couldn’t find rows in SVG 1')
     }
 
-    nodes.forEach(each)
-
-    done(list)
-
-    function each(node) {
-      q.selectAll('.attr-name', node).forEach(every)
-
-      function every(name) {
-        var value = clean(toString(name))
-        if (ev(value)) {
-          list.push(value)
-        }
+    while (++index < nodes.length) {
+      names = q.selectAll('.attr-name', nodes[index])
+      offset = -1
+      while (++offset < names.length) {
+        value = clean(toString(names[offset]))
+        if (ev(value)) list.push(value)
       }
     }
+
+    done(list)
 
     function clean(value) {
       return value.replace(/[‘’]/g, '')
@@ -62,21 +60,19 @@ function ontiny(response) {
     var tree = proc.parse(buf)
     var list = []
     var nodes = q.selectAll('#attributes .attribute', tree)
+    var index = -1
+    var value
 
     if (nodes.length === 0) {
       throw new Error('Couldn’t find nodes in SVG Tiny')
     }
 
-    nodes.forEach(each)
+    while (++index < nodes.length) {
+      value = toString(q.select('.attribute-name', nodes[index]))
+      if (ev(value)) list.push(value)
+    }
 
     done(list)
-
-    function each(node) {
-      var value = toString(q.select('.attribute-name', node))
-      if (ev(value)) {
-        list.push(value)
-      }
-    }
   }
 }
 
@@ -87,21 +83,19 @@ function onsvg2(response) {
     var tree = proc.parse(buf)
     var list = []
     var nodes = q.selectAll('tbody tr', tree)
+    var index = -1
+    var value
 
     if (nodes.length === 0) {
       throw new Error('Couldn’t find nodes in SVG 2')
     }
 
-    nodes.forEach(each)
+    while (++index < nodes.length) {
+      value = toString(q.select('.attr-name span', nodes[index]))
+      if (ev(value)) list.push(value)
+    }
 
     done(list)
-
-    function each(node) {
-      var value = toString(q.select('.attr-name span', node))
-      if (ev(value)) {
-        list.push(value)
-      }
-    }
   }
 }
 
@@ -112,13 +106,15 @@ function done(list) {
 
   if (actual === expected) {
     fs.writeFile(
-      'index.json',
-      JSON.stringify(all.filter(unique).sort(alphaSort()), 0, 2) + '\n',
+      'index.js',
+      'export var svgEventAttributes = ' +
+        JSON.stringify(
+          all.filter((d, i, data) => data.indexOf(d) === i).sort(alphaSort()),
+          null,
+          2
+        ) +
+        '\n',
       bail
     )
   }
-}
-
-function unique(d, i, data) {
-  return data.indexOf(d) === i
 }

@@ -23,9 +23,11 @@
   "contributors": [
     "Titus Wormer <tituswormer@gmail.com> (https://wooorm.com)"
   ],
-  "main": "index.json",
+  "sideEffects": false,
+  "type": "module",
+  "main": "index.js",
   "files": [
-    "index.json"
+    "index.js"
   ],
   "devDependencies": {
     "alpha-sort": "^4.0.0",
@@ -60,8 +62,7 @@
     "esnext": false,
     "prettier": true,
     "rules": {
-      "unicorn/no-array-callback-reference": "off",
-      "unicorn/no-array-for-each": "off"
+      "import/no-mutable-exports": "off"
     }
   },
   "remarkConfig": {
