@@ -11,6 +11,9 @@ Includes events from [SVG 1.1][1.1], [SVG Tiny 1.2][1.2], and [SVG 2][2.0].
 
 ## Install
 
+This package is ESM only: Node 12+ is needed to use it and it must be `import`ed
+instead of `require`d.
+
 [npm][]:
 
 ```sh
@@ -44,7 +47,7 @@ Yields:
 
 ## API
 
-`svg-event-attributes` exports the following identifiers: `svgEventAttributes`.
+This package exports the following identifiers: `svgEventAttributes`.
 There is no default export.
 
 ### `svgEventAttributes`
