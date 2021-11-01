@@ -1,3 +1,8 @@
+/**
+ * List of SVG event handler content attributes.
+ *
+ * @type {Array<string>}
+ */
 export const svgEventAttributes = [
   'onabort',
   'onactivate',

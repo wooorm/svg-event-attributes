@@ -1,3 +1,4 @@
+import assert from 'node:assert'
 import fs from 'node:fs'
 import https from 'node:https'
 import {bail} from 'bail'
@@ -59,7 +60,9 @@ https.get('https://www.w3.org/TR/SVGTiny12/attributeTable.html', (response) => {
         }
 
         while (++index < nodes.length) {
-          const value = toString(select('.attribute-name', nodes[index]))
+          const name = select('.attribute-name', nodes[index])
+          assert(name, 'expeted `name` node')
+          const value = toString(name)
 
           if (isEventHandler(value)) set.add(value)
         }
@@ -83,7 +86,9 @@ https.get('https://www.w3.org/TR/SVG2/attindex.html', (response) => {
         }
 
         while (++index < nodes.length) {
-          const value = toString(select('.attr-name span', nodes[index]))
+          const name = select('.attr-name span', nodes[index])
+          assert(name, 'expeted `name` node')
+          const value = toString(name)
 
           if (isEventHandler(value)) set.add(value)
         }
@@ -100,9 +105,16 @@ function done() {
   if (actual === expected) {
     fs.writeFile(
       'index.js',
-      'export const svgEventAttributes = ' +
-        JSON.stringify([...set].sort(alphaSort()), null, 2) +
-        '\n',
+      [
+        '/**',
+        ' * List of SVG event handler content attributes.',
+        ' *',
+        ' * @type {Array<string>}',
+        ' */',
+        'export const svgEventAttributes = ' +
+          JSON.stringify([...set].sort(alphaSort()), null, 2),
+        ''
+      ].join('\n'),
       bail
     )
   }
