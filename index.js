@@ -1,4 +1,4 @@
-export var svgEventAttributes = [
+export const svgEventAttributes = [
   'onabort',
   'onactivate',
   'onafterprint',

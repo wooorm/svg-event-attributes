@@ -1,4 +1,4 @@
-import assert from 'assert'
+import assert from 'node:assert'
 import test from 'tape'
 import {svgEventAttributes} from './index.js'
 
@@ -6,8 +6,8 @@ test('svgEventAttributes', function (t) {
   t.ok(Array.isArray(svgEventAttributes), 'should be an array')
 
   t.doesNotThrow(function () {
-    var index = -1
-    var prop
+    let index = -1
+    let prop
 
     while (++index < svgEventAttributes.length) {
       prop = svgEventAttributes[index]
