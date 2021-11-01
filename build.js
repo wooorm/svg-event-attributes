@@ -1,118 +1,107 @@
 import fs from 'node:fs'
 import https from 'node:https'
 import {bail} from 'bail'
-import concat from 'concat-stream'
+import concatStream from 'concat-stream'
 import alphaSort from 'alpha-sort'
 import {unified} from 'unified'
-import parse from 'rehype-parse'
+import rehypeParse from 'rehype-parse'
 import {select, selectAll} from 'hast-util-select'
 import {toString} from 'hast-util-to-string'
 import {isEventHandler} from 'hast-util-is-event-handler'
 
-const proc = unified().use(parse)
+const processor = unified().use(rehypeParse)
 
 let actual = 0
 const expected = 3
 
-let all = []
+/** @type {Set<string>} */
+const set = new Set()
 
-https.get('https://www.w3.org/TR/SVG11/attindex.html', onsvg1)
-https.get('https://www.w3.org/TR/SVGTiny12/attributeTable.html', ontiny)
-https.get('https://www.w3.org/TR/SVG2/attindex.html', onsvg2)
+https.get('https://www.w3.org/TR/SVG11/attindex.html', (response) => {
+  response
+    .pipe(
+      concatStream((buf) => {
+        const tree = processor.parse(buf)
+        const nodes = selectAll('.property-table tr', tree)
+        let index = -1
 
-function onsvg1(response) {
-  response.pipe(concat(onconcat)).on('error', bail)
+        if (nodes.length === 0) {
+          throw new Error('Couldn’t find rows in SVG 1')
+        }
 
-  function onconcat(buf) {
-    const tree = proc.parse(buf)
-    const list = []
-    const nodes = selectAll('.property-table tr', tree)
-    let index = -1
-    let offset
-    let names
-    let value
+        while (++index < nodes.length) {
+          const names = selectAll('.attr-name', nodes[index])
+          let offset = -1
 
-    if (nodes.length === 0) {
-      throw new Error('Couldn’t find rows in SVG 1')
-    }
+          while (++offset < names.length) {
+            const value = toString(names[offset]).replace(/[‘’]/g, '')
 
-    while (++index < nodes.length) {
-      names = selectAll('.attr-name', nodes[index])
-      offset = -1
-      while (++offset < names.length) {
-        value = clean(toString(names[offset]))
-        if (isEventHandler(value)) list.push(value)
-      }
-    }
+            if (isEventHandler(value)) set.add(value)
+          }
+        }
 
-    done(list)
+        done()
+      })
+    )
+    .on('error', bail)
+})
 
-    function clean(value) {
-      return value.replace(/[‘’]/g, '')
-    }
-  }
-}
+https.get('https://www.w3.org/TR/SVGTiny12/attributeTable.html', (response) => {
+  response
+    .pipe(
+      concatStream((buf) => {
+        const tree = processor.parse(buf)
+        const nodes = selectAll('#attributes .attribute', tree)
+        let index = -1
 
-function ontiny(response) {
-  response.pipe(concat(onconcat)).on('error', bail)
+        if (nodes.length === 0) {
+          throw new Error('Couldn’t find nodes in SVG Tiny')
+        }
 
-  function onconcat(buf) {
-    const tree = proc.parse(buf)
-    const list = []
-    const nodes = selectAll('#attributes .attribute', tree)
-    let index = -1
-    let value
+        while (++index < nodes.length) {
+          const value = toString(select('.attribute-name', nodes[index]))
 
-    if (nodes.length === 0) {
-      throw new Error('Couldn’t find nodes in SVG Tiny')
-    }
+          if (isEventHandler(value)) set.add(value)
+        }
 
-    while (++index < nodes.length) {
-      value = toString(select('.attribute-name', nodes[index]))
-      if (isEventHandler(value)) list.push(value)
-    }
+        done()
+      })
+    )
+    .on('error', bail)
+})
 
-    done(list)
-  }
-}
+https.get('https://www.w3.org/TR/SVG2/attindex.html', (response) => {
+  response
+    .pipe(
+      concatStream((buf) => {
+        const tree = processor.parse(buf)
+        const nodes = selectAll('tbody tr', tree)
+        let index = -1
 
-function onsvg2(response) {
-  response.pipe(concat(onconcat)).on('error', bail)
+        if (nodes.length === 0) {
+          throw new Error('Couldn’t find nodes in SVG 2')
+        }
 
-  function onconcat(buf) {
-    const tree = proc.parse(buf)
-    const list = []
-    const nodes = selectAll('tbody tr', tree)
-    let index = -1
-    let value
+        while (++index < nodes.length) {
+          const value = toString(select('.attr-name span', nodes[index]))
 
-    if (nodes.length === 0) {
-      throw new Error('Couldn’t find nodes in SVG 2')
-    }
+          if (isEventHandler(value)) set.add(value)
+        }
 
-    while (++index < nodes.length) {
-      value = toString(select('.attr-name span', nodes[index]))
-      if (isEventHandler(value)) list.push(value)
-    }
+        done()
+      })
+    )
+    .on('error', bail)
+})
 
-    done(list)
-  }
-}
-
-function done(list) {
-  all = all.concat(list)
-
+function done() {
   actual++
 
   if (actual === expected) {
     fs.writeFile(
       'index.js',
       'export const svgEventAttributes = ' +
-        JSON.stringify(
-          all.filter((d, i, data) => data.indexOf(d) === i).sort(alphaSort()),
-          null,
-          2
-        ) +
+        JSON.stringify([...set].sort(alphaSort()), null, 2) +
         '\n',
       bail
     )

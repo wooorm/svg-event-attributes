@@ -7,10 +7,9 @@ test('svgEventAttributes', function (t) {
 
   t.doesNotThrow(function () {
     let index = -1
-    let prop
 
     while (++index < svgEventAttributes.length) {
-      prop = svgEventAttributes[index]
+      const prop = svgEventAttributes[index]
       assert.equal(typeof prop, 'string', prop + ' should be string')
       assert.strictEqual(prop, prop.trim(), prop + ' should be trimmed')
       assert.ok(/^on[a-z]+$/.test(prop), prop + ' should be `a-z`')
