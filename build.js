@@ -107,7 +107,7 @@ function done() {
       'index.js',
       [
         '/**',
-        ' * List of SVG event handler content attributes.',
+        ' * List of SVG event handler attributes.',
         ' *',
         ' * @type {Array<string>}',
         ' */',

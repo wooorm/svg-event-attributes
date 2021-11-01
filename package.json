@@ -1,7 +1,7 @@
 {
   "name": "svg-event-attributes",
   "version": "2.0.1",
-  "description": "List of SVG event handler content attributes",
+  "description": "List of SVG event handler attributes",
   "license": "MIT",
   "keywords": [
     "svg",
