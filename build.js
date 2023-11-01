@@ -26,7 +26,7 @@ while (++index < nodes1.length) {
   let offset = -1
 
   while (++offset < names.length) {
-    const value = toString(names[offset]).replace(/[‘’]/g, '')
+    const value = toString(names[offset]).replaceAll(/[‘’]/g, '')
 
     if (isEventHandler(value)) set.add(value)
   }
